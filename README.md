@@ -4,7 +4,7 @@ Um sistema web de gerenciamento de clientes (CRM) 100% funcional, desenvolvido c
 
 ## 🚀 Demonstração
 
-🔗 [Acesse o projeto online](https://seu-usuario.github.io/seu-repositorio)
+🔗 [Acesse o projeto online](https://willyancodes.github.io/BounceMaster/)
 
 *(Substitua o link acima após publicar no GitHub Pages.)*
 
