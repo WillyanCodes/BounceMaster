@@ -10,11 +10,14 @@ function mostrarAba(aba) {
   const link = document.querySelector(`a[onclick="mostrarAba('${aba}')"]`);
   if (link) link.classList.add('active');
 
-  // Atualiza conteúdo da aba
-  if (aba === 'clientes') renderizarClientes();
-  if (aba === 'pagamentos') renderizarPagamentos();
-  if (aba === 'dashboard') atualizarDashboard();
-  if (aba === 'chat') renderizarChat();
+  // FORÇA ATUALIZAÇÃO DO CONTEÚDO
+  setTimeout(() => {
+    if (aba === 'clientes') renderizarClientes();
+    if (aba === 'pagamentos') renderizarPagamentos();
+    if (aba === 'dashboard') atualizarDashboard();
+    if (aba === 'chat') renderizarChat();
+67();
+  }, 50);
 }
 
 function adicionarCliente() {
@@ -45,12 +48,12 @@ function renderizarClientes() {
   const filtrados = clientes.filter(c => c.nome.toLowerCase().includes(termo));
 
   lista.innerHTML = filtrados.length === 0 
-    ? '<p class="text-muted">Nenhum cliente cadastrado.</p>'
+    ? '<p class="text-muted p-3">Nenhum cliente cadastrado.</p>'
     : filtrados.map(c => `
-      <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
+      <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
         <div>
           <strong>${c.nome}</strong><br>
-          <small>${c.email} | ${c.telefone || '—'}</small>
+          <small class="text-muted">${c.email} | ${c.telefone || '—'}</small>
         </div>
         <div>
           <button class="btn btn-sm ${c.pago ? 'btn-success' : 'btn-warning'}" onclick="togglePago(${c.id})">
@@ -83,27 +86,36 @@ function renderizarPagamentos() {
   const pagos = clientes.filter(c => c.pago).length;
 
   container.innerHTML = `
-    <div class="alert alert-info">
-      <strong>Total Recebido:</strong> R$ ${total.toFixed(2)} | 
-      <strong>Pagos:</strong> ${pagos} / ${clientes.length}
+    <div class="alert alert-primary">
+      <h5>Pagamentos - Novembro 2025</h5>
+      <p><strong>Total Recebido:</strong> R$ ${total.toFixed(2)}</p>
+      <p><strong>Clientes Pagos:</strong> ${pagos} / ${clientes.length}</p>
     </div>
-    <div class="mt-3">
-      ${clientes.length === 0 ? '<p class="text-muted">Nenhum cliente.</p>' : clientes.map(c => `
-        <div class="d-flex justify-content-between p-2 border-bottom">
-          <span><strong>${c.nome}</strong> - R$ ${c.valor}</span>
-          <span class="badge ${c.pago ? 'bg-success' : 'bg-warning'}">${c.pago ? 'Pago' : 'Pendente'}</span>
-        </div>
-      `).join('')}
+    <div class="list-group">
+      ${clientes.length === 0 
+        ? '<div class="list-group-item text-center text-muted">Nenhum cliente cadastrado.</div>' 
+        : clientes.map(c => `
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>${c.nome}</strong><br>
+              <small>R$ ${c.valor.toFixed(2)}</small>
+            </div>
+            <span class="badge ${c.pago ? 'bg-success' : 'bg-warning'} fs-6">
+              ${c.pago ? 'Pago' : 'Pendente'}
+            </span>
+          </div>
+        `).join('')}
     </div>
   `;
 }
 
 function enviarLembrete() {
-  const pendentes = clientes.filter(c => !c.pago).length;
-  alert(pendentes > 0 
-    ? `Lembrete enviado para ${pendentes} clientes pendentes!` 
-    : 'Todos os clientes estão em dia!'
-  );
+  const pendentes = clientes.filter(c => !c.pago);
+  if (pendentes.length === 0) {
+    alert('Todos os clientes estão em dia!');
+  } else {
+    alert(`Lembrete enviado para ${pendentes.length} clientes pendentes!`);
+  }
 }
 
 function atualizarDashboard() {
@@ -119,16 +131,22 @@ function atualizarDashboard() {
       labels: ['Pagos', 'Pendentes'],
       datasets: [{
         data: [clientes.filter(c => c.pago).length, clientes.filter(c => !c.pago).length],
-        backgroundColor: ['#10B981', '#F59E0B']
+        backgroundColor: ['#10B981', '#F59E0B'],
+        borderWidth: 2
       }]
     },
-    options: { responsive: true }
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } }
+    }
   });
 }
 
 function renderizarChat() {
   const mensagens = document.getElementById('chat-mensagens');
-  mensagens.innerHTML = `<div class="msg-ia">Olá! Sou o assistente virtual. Como posso ajudar?</div>`;
+  mensagens.innerHTML = `
+    <div class="msg-ia p-3 rounded mb-2">Olá! Sou o assistente virtual. Como posso ajudar?</div>
+  `;
 }
 
 function enviarChat() {
@@ -137,7 +155,7 @@ function enviarChat() {
   if (!texto) return;
 
   const mensagens = document.getElementById('chat-mensagens');
-  mensagens.innerHTML += `<div class="msg-user">${texto}</div>`;
+  mensagens.innerHTML += `<div class="msg-user p-3 rounded mb-2 text-end">${texto}</div>`;
   input.value = '';
 
   setTimeout(() => {
@@ -145,22 +163,24 @@ function enviarChat() {
       "Cliente salvo com sucesso!",
       "Pagamento atualizado.",
       "Relatório gerado.",
-      "Tudo funcionando!"
+      "Tudo funcionando perfeitamente!"
     ];
-    mensagens.innerHTML += `<div class="msg-ia">${respostas[Math.floor(Math.random() * respostas.length)]}</div>`;
+    mensagens.innerHTML += `<div class="msg-ia p-3 rounded mb-2">${respostas[Math.floor(Math.random() * respostas.length)]}</div>`;
     mensagens.scrollTop = mensagens.scrollHeight;
   }, 800);
 }
 
+function salvar() {
+  localStorage.setItem('bounce_clientes', JSON.stringify(clientes));
+  atualizarTudo();
+}
+
 function atualizarTudo() {
-  renderizarClientes();
-  renderizarPagamentos();
-  if (document.getElementById('aba-dashboard').classList.contains('active')) {
-    atualizarDashboard();
-  }
-  if (document.getElementById('aba-chat').classList.contains('active')) {
-    renderizarChat();
-  }
+  const abaAtiva = document.querySelector('.aba.active')?.id;
+  if (abaAtiva === 'aba-clientes') renderizarClientes();
+  if (abaAtiva === 'aba-pagamentos') renderizarPagamentos();
+  if (abaAtiva === 'aba-dashboard') atualizarDashboard();
+  if (abaAtiva === 'aba-chat') renderizarChat();
 }
 
 // INICIAR
