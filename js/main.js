@@ -1,23 +1,20 @@
 let chart;
 
 function mostrarAba(aba) {
-  // Remove active de todas as abas e links
   document.querySelectorAll('.aba').forEach(a => a.classList.remove('active'));
   document.querySelectorAll('.nav-link').forEach(a => a.classList.remove('active'));
 
-  // Ativa a aba e o link
   document.getElementById(`aba-${aba}`).classList.add('active');
   const link = document.querySelector(`a[onclick="mostrarAba('${aba}')"]`);
   if (link) link.classList.add('active');
 
-  // FORÇA ATUALIZAÇÃO DO CONTEÚDO
+  // FORÇA ATUALIZAÇÃO
   setTimeout(() => {
     if (aba === 'clientes') renderizarClientes();
     if (aba === 'pagamentos') renderizarPagamentos();
     if (aba === 'dashboard') atualizarDashboard();
     if (aba === 'chat') renderizarChat();
-67();
-  }, 50);
+  }, 10);
 }
 
 function adicionarCliente() {
@@ -35,11 +32,14 @@ function adicionarCliente() {
     valor: 150
   });
 
+  limparFormulario();
+  salvar();
+}
+
+function limparFormulario() {
   document.getElementById('novo-nome').value = '';
   document.getElementById('novo-email').value = '';
   document.getElementById('novo-tel').value = '';
-
-  salvar();
 }
 
 function renderizarClientes() {
@@ -51,11 +51,12 @@ function renderizarClientes() {
     ? '<p class="text-muted p-3">Nenhum cliente cadastrado.</p>'
     : filtrados.map(c => `
       <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
-        <div>
+        <div class="flex-grow-1">
           <strong>${c.nome}</strong><br>
           <small class="text-muted">${c.email} | ${c.telefone || '—'}</small>
         </div>
-        <div>
+        <div class="d-flex gap-1">
+          <button class="btn btn-sm btn-primary" onclick="abrirEdicao(${c.id})">Editar</button>
           <button class="btn btn-sm ${c.pago ? 'btn-success' : 'btn-warning'}" onclick="togglePago(${c.id})">
             ${c.pago ? 'Pago' : 'Pendente'}
           </button>
@@ -65,6 +66,23 @@ function renderizarClientes() {
     `).join('');
 }
 
+function abrirEdicao(id) {
+  const cliente = clientes.find(c => c.id === id);
+  if (!cliente) return;
+
+  const novoNome = prompt('Editar nome:', cliente.nome);
+  if (novoNome === null) return;
+  const novoEmail = prompt('Editar email:', cliente.email);
+  if (novoEmail === null) return;
+  const novoTel = prompt('Editar telefone:', cliente.telefone || '');
+
+  cliente.nome = novoNome.trim() || cliente.nome;
+  cliente.email = novoEmail.trim() || cliente.email;
+  cliente.telefone = novoTel?.trim() || cliente.telefone;
+
+  salvar();
+}
+
 function togglePago(id) {
   const c = clientes.find(x => x.id === id);
   if (c) c.pago = !c.pago;
@@ -72,8 +90,10 @@ function togglePago(id) {
 }
 
 function deletarCliente(id) {
-  clientes = clientes.filter(x => x.id !== id);
-  salvar();
+  if (confirm('Tem certeza que deseja excluir este cliente?')) {
+    clientes = clientes.filter(x => x.id !== id);
+    salvar();
+  }
 }
 
 function filtrarClientes() {
@@ -86,26 +106,29 @@ function renderizarPagamentos() {
   const pagos = clientes.filter(c => c.pago).length;
 
   container.innerHTML = `
-    <div class="alert alert-primary">
+    <div class="alert alert-primary mb-3">
       <h5>Pagamentos - Novembro 2025</h5>
-      <p><strong>Total Recebido:</strong> R$ ${total.toFixed(2)}</p>
-      <p><strong>Clientes Pagos:</strong> ${pagos} / ${clientes.length}</p>
+      <p class="mb-0"><strong>Total Recebido:</strong> R$ ${total.toFixed(2)}</p>
+      <p class="mb-0"><strong>Clientes Pagos:</strong> ${pagos} / ${clientes.length}</p>
     </div>
     <div class="list-group">
       ${clientes.length === 0 
-        ? '<div class="list-group-item text-center text-muted">Nenhum cliente cadastrado.</div>' 
+        ? '<div class="list-group-item text-center text-muted">Nenhum cliente.</div>'
         : clientes.map(c => `
           <div class="list-group-item d-flex justify-content-between align-items-center">
             <div>
               <strong>${c.nome}</strong><br>
               <small>R$ ${c.valor.toFixed(2)}</small>
             </div>
-            <span class="badge ${c.pago ? 'bg-success' : 'bg-warning'} fs-6">
+            <span class="badge ${c.pago ? 'bg-success' : 'bg-warning'} fs-6 px-3 py-2">
               ${c.pago ? 'Pago' : 'Pendente'}
             </span>
           </div>
         `).join('')}
     </div>
+    <button class="btn btn-warning mt-3 w-100" onclick="enviarLembrete()">
+      Enviar Lembrete para Pendentes
+    </button>
   `;
 }
 
@@ -119,9 +142,13 @@ function enviarLembrete() {
 }
 
 function atualizarDashboard() {
-  document.getElementById('total-clientes').textContent = clientes.length;
-  document.getElementById('clientes-pagos').textContent = clientes.filter(c => c.pago).length;
-  document.getElementById('clientes-pendentes').textContent = clientes.filter(c => !c.pago).length;
+  const total = clientes.length;
+  const pagos = clientes.filter(c => c.pago).length;
+  const pendentes = total - pagos;
+
+  document.getElementById('total-clientes').textContent = total;
+  document.getElementById('clientes-pagos').textContent = pagos;
+  document.getElementById('clientes-pendentes').textContent = pendentes;
 
   const ctx = document.getElementById('grafico').getContext('2d');
   if (chart) chart.destroy();
@@ -130,9 +157,10 @@ function atualizarDashboard() {
     data: {
       labels: ['Pagos', 'Pendentes'],
       datasets: [{
-        data: [clientes.filter(c => c.pago).length, clientes.filter(c => !c.pago).length],
+        data: [pagos, pendentes],
         backgroundColor: ['#10B981', '#F59E0B'],
-        borderWidth: 2
+        borderWidth: 3,
+        borderColor: '#fff'
       }]
     },
     options: {
@@ -145,7 +173,7 @@ function atualizarDashboard() {
 function renderizarChat() {
   const mensagens = document.getElementById('chat-mensagens');
   mensagens.innerHTML = `
-    <div class="msg-ia p-3 rounded mb-2">Olá! Sou o assistente virtual. Como posso ajudar?</div>
+    <div class="msg-ia p-3 rounded bg-light mb-2">Olá! Sou o assistente virtual. Como posso ajudar?</div>
   `;
 }
 
@@ -155,17 +183,17 @@ function enviarChat() {
   if (!texto) return;
 
   const mensagens = document.getElementById('chat-mensagens');
-  mensagens.innerHTML += `<div class="msg-user p-3 rounded mb-2 text-end">${texto}</div>`;
+  mensagens.innerHTML += `<div class="msg-user p-3 rounded bg-primary text-white mb-2 text-end">${texto}</div>`;
   input.value = '';
 
   setTimeout(() => {
     const respostas = [
-      "Cliente salvo com sucesso!",
-      "Pagamento atualizado.",
+      "Cliente atualizado com sucesso!",
+      "Pagamento registrado.",
       "Relatório gerado.",
-      "Tudo funcionando perfeitamente!"
+      "Tudo funcionando!"
     ];
-    mensagens.innerHTML += `<div class="msg-ia p-3 rounded mb-2">${respostas[Math.floor(Math.random() * respostas.length)]}</div>`;
+    mensagens.innerHTML += `<div class="msg-ia p-3 rounded bg-light mb-2">${respostas[Math.floor(Math.random() * respostas.length)]}</div>`;
     mensagens.scrollTop = mensagens.scrollHeight;
   }, 800);
 }
