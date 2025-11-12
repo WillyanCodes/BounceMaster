@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BounceMaster - Suporte IA</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>CRM</text></svg>">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/react@18/umd/react.development.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.development.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/recharts@2.12.7/umd/Recharts.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f4f7fa; color: #333; }
+    .container { max-width: 1200px; margin: auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 1024px) { .grid { grid-template-columns: 2fr 1fr; } }
+    .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .btn { background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+    .btn:hover { background: #45a049; }
+    .chat { display: flex; flex-direction: column; height: 70vh; }
+    .messages { flex: 1; overflow-y: auto; padding: 10px; background: #f9f9f9; border-radius: 8px; }
+    .msg { margin: 8px 0; padding: 10px; border-radius: 12px; max-width: 80%; }
+    .user { background: #007bff; color: white; align-self: flex-end; }
+    .ia { background: #e9ecef; color: #333; align-self: flex-start; }
+    .input-area { display: flex; gap: 10px; margin-top: 10px; }
+    input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+    const { PieChart, Pie, Cell, ResponsiveContainer, Legend } = Recharts;
+
+    const ticketsData = [
+      { id: 1, cliente: "Maria Silva", assunto: "Erro no login", status: "Em Andamento", data: "12/04" },
+      { id: 2, cliente: "João Costa", assunto: "Dúvida sobre pagamento", status: "Resolvido", data: "11/04" },
+      { id: 3, cliente: "Ana Souza", assunto: "Reembolso", status: "Aberto", data: "12/04" }
+    ];
+
+    const aiResponses = [
+      "Entendido! Vou verificar agora.",
+      "Me envie mais detalhes.",
+      "Em até 5 minutos resolvo.",
+      "Chamado aberto.",
+      "Priorizado."
+    ];
+
+    function App() {
+      const [chat, setChat] = useState([{ text: "Olá! Sou o assistente virtual. Como posso ajudar?", sender: "ia" }]);
+      const [input, setInput] = useState("");
+
+      const sendMessage = () => {
+        if (!input.trim()) return;
+        setChat(prev => [...prev, { text: input, sender: "user" }]);
+        setTimeout(() => {
+          const resposta = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+          setChat(prev => [...prev, { text: resposta, sender: "ia" }]);
+        }, 800);
+        setInput("");
+      };
+
+      const statusCount = ticketsData.reduce((acc, t) => {
+        acc[t.status] = (acc[t.status] || 0) + 1;
+        return acc;
+      }, {});
+
+      const chartData = Object.entries(statusCount).map(([name, value]) => ({ name, value }));
+      const COLORS = { Aberto: '#3B82F6', 'Em Andamento': '#F59E0B', Resolvido: '#10B981' };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <h1>BounceMaster</h1>
+            <p>Suporte Inteligente com Chat IA</p>
+          </div>
+
+          <div className="grid">
+            <div>
+              <div className="card">
+                <h2>Dashboard</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', margin: '20px 0' }}>
+                  <div style={{ textAlign: 'center', padding: '15px', background: '#ebf5ff', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '2em', fontWeight: 'bold', color: '#3B82F6' }}>{ticketsData.length}</div>
+                    <div>Total</div>
+                  </div>
+                  <div style={{ textAlign: 'center', padding: '15px', background: '#fff4e6', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '2em', fontWeight: 'bold', color: '#F59E0B' }}>
+                      {ticketsData.filter(t => t.status === 'Em Andamento').length}
+                    </div>
+                    <div>Em Andamento</div>
+                  </div>
+                  <div style={{ textAlign: 'center', padding: '15px', background: '#e6f9f0', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '2em', fontWeight: 'bold', color: '#10B981' }}>
+                      {ticketsData.filter(t => t.status === 'Resolvido').length}
+                    </div>
+                    <div>Resolvidos</div>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={220}>
+                  <PieChart>
+                    <Pie data={chartData} cx="50%" cy="50%" outerRadius={70} label>
+                      {chartData.map((entry, i) => (
+                        <Cell key={i} fill={COLORS[entry.name]} />
+                      ))}
+                    </Pie>
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div>
+              <div className="card chat">
+                <h3>Chat com IA</h3>
+                <div className="messages">
+                  {chat.map((msg, i) => (
+                    <div key={i} className={`msg ${msg.sender}`}>
+                      {msg.text}
+                    </div>
+                  ))}
+                </div>
+                <div className="input-area">
+                  <input
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    onKeyPress={e => e.key === 'Enter' && sendMessage()}
+                    placeholder="Digite aqui..."
+                  />
+                  <button className="btn" onClick={sendMessage}>Enviar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
