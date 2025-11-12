@@ -3,159 +3,92 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BounceMaster - Suporte IA</title>
+  <title>BounceMaster Pro - CRM Completo</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
+  <link href="css/style.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { background: #f8f9fa; padding: 20px; font-family: 'Segoe UI', sans-serif; }
-    .header { background: linear-gradient(135deg, #5a67d8, #764ba2); color: white; padding: 30px; border-radius: 16px; text-align: center; margin-bottom: 30px; }
-    .card { border: none; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-    .chat-box { height: 500px; display: flex; flex-direction: column; }
-    .messages { flex: 1; overflow-y: auto; padding: 15px; background: #f1f3f5; border-radius: 12px; margin-bottom: 15px; }
-    .msg { margin: 8px 0; padding: 10px 15px; border-radius: 18px; max-width: 80%; word-wrap: break-word; }
-    .user { background: #5a67d8; color: white; align-self: flex-end; margin-left: auto; }
-    .ia { background: #e2e8f0; color: #2d3748; align-self: flex-start; }
-    .input-group button { border-radius: 12px; }
-    table { font-size: 0.95em; }
-    th { background: #5a67d8; color: white; }
-    td { vertical-align: middle; }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>BounceMaster</h1>
-      <p>Suporte Inteligente com Chat IA</p>
+  <div class="container mt-4">
+    <header class="header mb-5">
+      <h1>BounceMaster Pro</h1>
+      <p>CRM Completo com Clientes, Pagamentos e Suporte IA</p>
+    </header>
+
+    <!-- Formulário de Cliente -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <h3>Adicionar Cliente</h3>
+        <div class="row g-3">
+          <div class="col-md-3"><input type="text" id="nome" class="form-control" placeholder="Nome"></div>
+          <div class="col-md-3"><input type="email" id="email" class="form-control" placeholder="Email"></div>
+          <div class="col-md-3"><input type="tel" id="telefone" class="form-control" placeholder="Telefone"></div>
+          <div class="col-md-3"><button class="btn btn-primary w-100" onclick="adicionarCliente()">Adicionar</button></div>
+        </div>
+      </div>
     </div>
 
-    <!-- TABELA DE BENEFÍCIOS -->
-    <div class="card p-4 mb-4">
-      <h3 class="mb-3">Benefícios para Sua Empresa</h3>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Funcionalidade</th>
-            <th>Impacto no Cliente</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Chat com IA (simula atendente 24h)</strong></td>
-            <td>Reduz 70% do suporte humano</td>
-          </tr>
-          <tr>
-            <td><strong>Painel de tickets com status</strong></td>
-            <td>Organização total</td>
-          </tr>
-          <tr>
-            <td><strong>Relatórios em tempo real</strong></td>
-            <td>Dados para tomada de decisão</td>
-          </tr>
-          <tr>
-            <td><strong>100% responsivo</strong></td>
-            <td>Funciona no celular do dono</td>
-          </tr>
-          <tr>
-            <td><strong>Código limpo + documentação</strong></td>
-            <td>Cliente entende e edita</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="row g-4">
-      <!-- Dashboard -->
-      <div class="col-lg-8">
-        <div class="card p-4">
-          <h3 class="mb-4">Dashboard em Tempo Real</h3>
-          <div class="row text-center mb-4">
-            <div class="col">
-              <div class="p-3 bg-primary bg-opacity-10 rounded">
-                <h2 class="text-primary">3</h2>
-                <p>Total</p>
-              </div>
-            </div>
-            <div class="col">
-              <div class="p-3 bg-warning bg-opacity-10 rounded">
-                <h2 class="text-warning">1</h2>
-                <p>Em Andamento</p>
-              </div>
-            </div>
-            <div class="col">
-              <div class="p-3 bg-success bg-opacity-10 rounded">
-                <h2 class="text-success">1</h2>
-                <p>Resolvidos</p>
-              </div>
-            </div>
+    <div class="row">
+      <!-- Clientes -->
+      <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body d-flex flex-column">
+            <h3>Clientes Cadastrados</h3>
+            <input type="text" id="busca" class="form-control mb-3" placeholder="Buscar..." onkeyup="filtrarClientes()">
+            <div id="listaClientes" class="flex-grow-1 overflow-auto"></div>
+            <button class="btn btn-success mt-3" onclick="exportarCSV()">Exportar CSV</button>
           </div>
-          <canvas id="pieChart" height="100"></canvas>
         </div>
       </div>
 
-      <!-- Chat IA -->
+      <!-- Pagamentos -->
+      <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body d-flex flex-column">
+            <h3>Pagamentos - Novembro 2025</h3>
+            <div class="d-flex justify-content-between mb-3">
+              <strong>Total: R$ <span id="totalValor">0</span></strong>
+              <span>Pagos: <span id="pagosCount">0</span>/<span id="totalCount">0</span></span>
+            </div>
+            <div id="listaPagamentos" class="flex-grow-1 overflow-auto"></div>
+            <button class="btn btn-warning mt-3" onclick="enviarLembrete()">Lembrete para Pendentes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard + Chat -->
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-body">
+            <h3>Dashboard</h3>
+            <div class="row text-center mb-4">
+              <div class="col"><div class="stat bg-primary text-white"><h2 id="totalClientes">0</h2><p>Clientes</p></div></div>
+              <div class="col"><div class="stat bg-success text-white"><h2 id="clientesPagos">0</h2><p>Pagos</p></div></div>
+              <div class="col"><div class="stat bg-warning text-white"><h2 id="clientesPendentes">0</h2><p>Pendentes</p></div></div>
+            </div>
+            <canvas id="grafico" height="100"></canvas>
+          </div>
+        </div>
+      </div>
+
       <div class="col-lg-4">
-        <div class="card chat-box">
-          <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Chat com IA</h5>
-          </div>
-          <div class="messages" id="messages">
-            <div class="msg ia">Olá! Sou o assistente virtual. Como posso ajudar?</div>
-          </div>
-          <div class="input-group">
-            <input type="text" id="userInput" class="form-control" placeholder="Digite aqui..." />
-            <button class="btn btn-primary" onclick="sendMessage()">Enviar</button>
+        <div class="card chat">
+          <div class="card-header bg-primary text-white">Chat com IA</div>
+          <div id="mensagens" class="messages"></div>
+          <div class="input-group mt-3">
+            <input type="text" id="msgInput" class="form-control" placeholder="Digite...">
+            <button class="btn btn-primary" onclick="enviarMensagem()">Enviar</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <script>
-    const ctx = document.getElementById('pieChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Aberto', 'Em Andamento', 'Resolvido'],
-        datasets: [{
-          data: [1, 1, 1],
-          backgroundColor: ['#3B82F6', '#F59E0B', '#10B981']
-        }]
-      },
-      options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-    });
-
-    const messages = document.getElementById('messages');
-    const input = document.getElementById('userInput');
-    const responses = [
-      "Entendido! Vou verificar agora.",
-      "Me envie mais detalhes.",
-      "Em até 5 minutos resolvo.",
-      "Chamado aberto.",
-      "Priorizado."
-    ];
-
-    function sendMessage() {
-      const text = input.value.trim();
-      if (!text) return;
-      const userMsg = document.createElement('div');
-      userMsg.className = 'msg user';
-      userMsg.textContent = text;
-      messages.appendChild(userMsg);
-      setTimeout(() => {
-        const iaMsg = document.createElement('div');
-        iaMsg.className = 'msg ia';
-        iaMsg.textContent = responses[Math.floor(Math.random() * responses.length)];
-        messages.appendChild(iaMsg);
-        messages.scrollTop = messages.scrollHeight;
-      }, 800);
-      input.value = '';
-      messages.scrollTop = messages.scrollHeight;
-    }
-
-    input.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
-  </script>
+  <script src="js/clientes.js"></script>
+  <script src="js/pagamentos.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
