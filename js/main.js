@@ -1,17 +1,22 @@
 let chart;
 
-// MOSTRAR ABA
 function mostrarAba(aba) {
+  // Remove active de todas as abas e links
   document.querySelectorAll('.aba').forEach(a => a.classList.remove('active'));
   document.querySelectorAll('.nav-link').forEach(a => a.classList.remove('active'));
+
+  // Ativa a aba e o link
   document.getElementById(`aba-${aba}`).classList.add('active');
-  document.querySelector(`a[href="#${aba}"]`).classList.add('active');
-  if (aba === 'dashboard') atualizarDashboard();
+  const link = document.querySelector(`a[onclick="mostrarAba('${aba}')"]`);
+  if (link) link.classList.add('active');
+
+  // Atualiza conteúdo da aba
   if (aba === 'clientes') renderizarClientes();
   if (aba === 'pagamentos') renderizarPagamentos();
+  if (aba === 'dashboard') atualizarDashboard();
+  if (aba === 'chat') renderizarChat();
 }
 
-// ADICIONAR CLIENTE
 function adicionarCliente() {
   const nome = document.getElementById('novo-nome').value.trim();
   const email = document.getElementById('novo-email').value.trim();
@@ -34,57 +39,56 @@ function adicionarCliente() {
   salvar();
 }
 
-// RENDERIZAR CLIENTES
 function renderizarClientes() {
   const lista = document.getElementById('lista-clientes');
   const termo = document.getElementById('busca-cliente').value.toLowerCase();
   const filtrados = clientes.filter(c => c.nome.toLowerCase().includes(termo));
 
-  lista.innerHTML = filtrados.map(c => `
-    <div class="list-group-item d-flex justify-content-between align-items-center">
-      <div>
-        <strong>${c.nome}</strong><br>
-        <small>${c.email} | ${c.telefone || '—'}</small>
+  lista.innerHTML = filtrados.length === 0 
+    ? '<p class="text-muted">Nenhum cliente cadastrado.</p>'
+    : filtrados.map(c => `
+      <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
+        <div>
+          <strong>${c.nome}</strong><br>
+          <small>${c.email} | ${c.telefone || '—'}</small>
+        </div>
+        <div>
+          <button class="btn btn-sm ${c.pago ? 'btn-success' : 'btn-warning'}" onclick="togglePago(${c.id})">
+            ${c.pago ? 'Pago' : 'Pendente'}
+          </button>
+          <button class="btn btn-sm btn-danger" onclick="deletarCliente(${c.id})">×</button>
+        </div>
       </div>
-      <div>
-        <button class="btn btn-sm ${c.pago ? 'btn-success' : 'btn-warning'}" onclick="togglePago(${c.id})">
-          ${c.pago ? 'Pago' : 'Pendente'}
-        </button>
-        <button class="btn btn-sm btn-danger" onclick="deletarCliente(${c.id})">×</button>
-      </div>
-    </div>
-  `).join('');
+    `).join('');
 }
 
-// TOGGLE PAGO
 function togglePago(id) {
   const c = clientes.find(x => x.id === id);
-  c.pago = !c.pago;
+  if (c) c.pago = !c.pago;
   salvar();
 }
 
-// DELETAR CLIENTE
 function deletarCliente(id) {
   clientes = clientes.filter(x => x.id !== id);
   salvar();
 }
 
-// FILTRAR
 function filtrarClientes() {
   renderizarClientes();
 }
 
-// RENDERIZAR PAGAMENTOS
 function renderizarPagamentos() {
   const container = document.getElementById('lista-pagamentos');
   const total = clientes.reduce((s, c) => s + (c.pago ? c.valor : 0), 0);
   const pagos = clientes.filter(c => c.pago).length;
 
   container.innerHTML = `
-    <p><strong>Total Recebido:</strong> R$ ${total.toFixed(2)}</p>
-    <p><strong>Pagos:</strong> ${pagos} / ${clientes.length}</p>
+    <div class="alert alert-info">
+      <strong>Total Recebido:</strong> R$ ${total.toFixed(2)} | 
+      <strong>Pagos:</strong> ${pagos} / ${clientes.length}
+    </div>
     <div class="mt-3">
-      ${clientes.map(c => `
+      ${clientes.length === 0 ? '<p class="text-muted">Nenhum cliente.</p>' : clientes.map(c => `
         <div class="d-flex justify-content-between p-2 border-bottom">
           <span><strong>${c.nome}</strong> - R$ ${c.valor}</span>
           <span class="badge ${c.pago ? 'bg-success' : 'bg-warning'}">${c.pago ? 'Pago' : 'Pendente'}</span>
@@ -94,13 +98,14 @@ function renderizarPagamentos() {
   `;
 }
 
-// LEMBRETE
 function enviarLembrete() {
   const pendentes = clientes.filter(c => !c.pago).length;
-  alert(pendentes > 0 ? `Lembrete enviado para ${pendentes} clientes!` : 'Todos em dia!');
+  alert(pendentes > 0 
+    ? `Lembrete enviado para ${pendentes} clientes pendentes!` 
+    : 'Todos os clientes estão em dia!'
+  );
 }
 
-// DASHBOARD
 function atualizarDashboard() {
   document.getElementById('total-clientes').textContent = clientes.length;
   document.getElementById('clientes-pagos').textContent = clientes.filter(c => c.pago).length;
@@ -121,38 +126,41 @@ function atualizarDashboard() {
   });
 }
 
-// CHAT IA
+function renderizarChat() {
+  const mensagens = document.getElementById('chat-mensagens');
+  mensagens.innerHTML = `<div class="msg-ia">Olá! Sou o assistente virtual. Como posso ajudar?</div>`;
+}
+
 function enviarChat() {
   const input = document.getElementById('chat-input');
   const texto = input.value.trim();
   if (!texto) return;
 
-  const msgs = document.getElementById('chat-mensagens');
-  msgs.innerHTML += `<div class="msg-user">${texto}</div>`;
+  const mensagens = document.getElementById('chat-mensagens');
+  mensagens.innerHTML += `<div class="msg-user">${texto}</div>`;
   input.value = '';
 
   setTimeout(() => {
-    const respostas = ["Cliente salvo!", "Pagamento atualizado.", "Relatório pronto.", "Tudo certo!"];
-    msgs.innerHTML += `<div class="msg-ia">${respostas[Math.floor(Math.random() * respostas.length)]}</div>`;
-    msgs.scrollTop = msgs.scrollHeight;
+    const respostas = [
+      "Cliente salvo com sucesso!",
+      "Pagamento atualizado.",
+      "Relatório gerado.",
+      "Tudo funcionando!"
+    ];
+    mensagens.innerHTML += `<div class="msg-ia">${respostas[Math.floor(Math.random() * respostas.length)]}</div>`;
+    mensagens.scrollTop = mensagens.scrollHeight;
   }, 800);
 }
 
-// EXPORTAR CSV
-function exportarCSV() {
-  const csv = 'Nome,Email,Telefone,Status,Valor\n' +
-    clientes.map(c => `${c.nome},"${c.email}",${c.telefone || ''},${c.pago ? 'Pago' : 'Pendente'},${c.valor}`).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'clientes.csv'; a.click();
-}
-
-// ATUALIZAR TUDO
 function atualizarTudo() {
   renderizarClientes();
   renderizarPagamentos();
-  atualizarDashboard();
+  if (document.getElementById('aba-dashboard').classList.contains('active')) {
+    atualizarDashboard();
+  }
+  if (document.getElementById('aba-chat').classList.contains('active')) {
+    renderizarChat();
+  }
 }
 
 // INICIAR
