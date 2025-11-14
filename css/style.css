@@ -1,7 +1,0 @@
-.sidebar { position: fixed; top: 0; left: 0; height: 100%; z-index: 1000; }
-.content { margin-left: 250px; }
-.aba { display: none; }
-.aba.active { display: block; }
-.list-group-item { cursor: pointer; }
-.msg-user { background: #007bff; color: white; align-self: flex-end; border-radius: 15px; padding: 8px 12px; margin: 5px; max-width: 70%; }
-.msg-ia { background: #e9ecef; color: #333; align-self: flex-start; border-radius: 15px; padding: 8px 12px; margin: 5px; max-width: 70%; }
