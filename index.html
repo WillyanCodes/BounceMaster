@@ -3,58 +3,162 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jornada da Liberdade Digital - XPlus</title>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Jornada da Liberdade Digital | XPlus</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-    .hero { background: rgba(0,0,0,0.3); padding: 120px 0; text-align: center; }
-    .section { padding: 80px 0; }
-    .section-white { background: #ffffff; color: #333; }
-    .form-control { border-radius: 50px; background: rgba(255,255,255,0.9); border: none; padding: 15px 20px; }
-    .btn { border-radius: 50px; padding: 15px 30px; font-weight: bold; font-size: 1.1em; }
-    .btn-success { background: #10b981; border: none; }
-    .btn-success:hover { background: #059669; }
-    .card { border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 16px; }
-    .mentor-img { border-radius: 16px; max-width: 100%; height: auto; }
-    .animate { animation: fadeInUp 0.8s ease-out; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 768px) { .hero { padding: 60px 0; } .display-3 { font-size: 2rem; } }
+    :root {
+      --primary: #6366f1;
+      --secondary: #8b5cf6;
+      --accent: #10b981;
+      --dark: #1e293b;
+      --light: #f8fafc;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      overflow-x: hidden;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 140px 0 100px;
+      background: url('https://drive.google.com/uc?id=1C1xBVGH4ilsAhM-hAIO_1LEj5MKgTv3j') no-repeat center center;
+      background-size: cover;
+      position: relative;
+      z-index: 1;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6); z-index: -1;
+    }
+    .hero h1 {
+      font-size: 3.5rem; font-weight: 800; line-height: 1.1;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .hero p.lead {
+      font-size: 1.3rem; margin: 1.5rem 0; opacity: 0.95;
+    }
+
+    /* Form */
+    .form-control, .form-select {
+      border-radius: 50px; padding: 14px 20px; font-size: 1rem;
+      background: rgba(255,255,255,0.95); border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .btn-primary {
+      background: var(--accent); border: none; border-radius: 50px;
+      padding: 14px 32px; font-weight: 600; font-size: 1.1rem;
+      box-shadow: 0 6px 20px rgba(16,185,129,0.4);
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px); box-shadow: 0 10px 25px rgba(16,185,129,0.5);
+    }
+
+    /* Sections */
+    .section { padding: 100px 0; }
+    .section-alt { background: white; color: #1e293b; }
+    .section h2 {
+      font-weight: 700; font-size: 2.5rem; margin-bottom: 3rem;
+      position: relative; display: inline-block;
+    }
+    .section h2::after {
+      content: ''; position: absolute; bottom: -12px; left: 0; width: 60px; height: 4px;
+      background: var(--accent); border-radius: 2px;
+    }
+
+    /* Cards */
+    .card-lesson {
+      background: white; color: #1e293b; border-radius: 20px;
+      padding: 2rem; height: 100%; box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: none;
+    }
+    .card-lesson:hover {
+      transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    .card-lesson h4 {
+      color: var(--primary); font-weight: 700; font-size: 1.4rem;
+    }
+
+    /* Mentor */
+    .mentor-img {
+      border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      max-width: 100%; height: auto;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--dark); color: white; padding: 2rem 0;
+      font-size: 0.9rem;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate { opacity: 0; animation: fadeInUp 0.8s ease-out forwards; }
+    .delay-1 { animation-delay: 0.2s; }
+    .delay-2 { animation-delay: 0.4s; }
+    .delay-3 { animation-delay: 0.6s; }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.2rem; }
+      .hero p.lead { font-size: 1.1rem; }
+      .hero { padding: 100px 0 60px; }
+      .section { padding: 60px 0; }
+    }
   </style>
 </head>
 <body>
+
   <!-- Hero -->
-  <section class="hero animate">
+  <section class="hero text-center">
     <div class="container">
-      <h1 class="display-3 fw-bold mb-4">Crie um Negócio Digital de Seis Dígitos e Viva com Liberdade de Tempo, Renda e Geografia</h1>
-      <p class="lead mb-5 fs-4">Em 3 noites ao vivo, você vai aprender o método que transformou especialistas, criadores e estrategistas em profissionais livres — pessoas que vivem do digital com renda previsível, propósito e estrutura. Sem depender de cliente fixo, sem agências, e sem rodar no mesmo ciclo de estresse e incerteza.</p>
-      <form id="formCadastro">
-        <div class="row justify-content-center g-3">
-          <div class="col-md-3"><input type="text" class="form-control" placeholder="Nome" required></div>
-          <div class="col-md-3"><input type="email" class="form-control" placeholder="E-mail" required></div>
-          <div class="col-md-3"><input type="tel" class="form-control" placeholder="WhatsApp" required></div>
-          <div class="col-md-2"><button type="submit" class="btn btn-success w-100">Quero entrar na Jornada</button></div>
+      <div class="row justify-content-center">
+        <div class="col-lg-10 animate">
+          <h1>Crie um Negócio Digital de Seis Dígitos e Viva com Liberdade de Tempo, Renda e Geografia</h1>
+          <p class="lead">Em 3 noites ao vivo, você vai aprender o método que transformou especialistas, criadores e estrategistas em profissionais livres — pessoas que vivem do digital com renda previsível, propósito e estrutura. Sem depender de cliente fixo, sem agências, e sem rodar no mesmo ciclo de estresse e incerteza.</p>
+          
+          <form id="leadForm" class="mt-5 animate delay-1">
+            <div class="row g-3 justify-content-center">
+              <div class="col-md-3"><input type="text" class="form-control" placeholder="Nome" required></div>
+              <div class="col-md-3"><input type="email" class="form-control" placeholder="E-mail" required></div>
+              <div class="col-md-3"><input type="tel" class="form-control" placeholder="WhatsApp" required></div>
+              <div class="col-md-3"><button type="submit" class="btn btn-primary w-100">Quero entrar na Jornada</button></div>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   </section>
 
   <!-- Cronograma -->
-  <section class="section section-white">
+  <section class="section section-alt">
     <div class="container">
-      <h2 class="text-center mb-5 animate">Três dias que podem mudar a sua relação com o trabalho e com o dinheiro</h2>
-      <div class="row text-center">
-        <div class="col-md-4 animate">
-          <h3>Aula 1 — 25/11 às 20h</h3>
-          <p>O Código da Liberdade: Os 3 pilares que sustentam um negócio digital de alto faturamento e baixa dependência.</p>
+      <h2 class="text-center animate">Três dias que podem mudar a sua relação com o trabalho e com o dinheiro</h2>
+      <div class="row g-4 mt-4">
+        <div class="col-md-4 animate delay-1">
+          <div class="card-lesson text-center">
+            <h4>Aula 1 — 25/11 às 20h</h4>
+            <p class="mt-3">O Código da Liberdade: Os 3 pilares que sustentam um negócio digital de alto faturamento e baixa dependência.</p>
+          </div>
         </div>
-        <div class="col-md-4 animate">
-          <h3>Aula 2 — 26/11 às 20h</h3>
-          <p>A Engenharia da Autoridade: Como transformar conhecimento em ativos digitais que vendem todos os dias.</p>
+        <div class="col-md-4 animate delay-2">
+          <div class="card-lesson text-center">
+            <h4>Aula 2 — 26/11 às 20h</h4>
+            <p class="mt-3">A Engenharia da Autoridade: Como transformar conhecimento em ativos digitais que vendem todos os dias.</p>
+          </div>
         </div>
-        <div class="col-md-4 animate">
-          <h3>Aula 3 — 27/11 às 20h</h3>
-          <p>O Plano da Independência: Como criar sua estrutura de receita previsível e viver de estratégia, não de execução.</p>
+        <div class="col-md-4 animate delay-3">
+          <div class="card-lesson text-center">
+            <h4>Aula 3 — 27/11 às 20h</h4>
+            <p class="mt-3">O Plano da Independência: Como criar sua estrutura de receita previsível e viver de estratégia, não de execução.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -63,18 +167,18 @@
   <!-- O que vai aprender -->
   <section class="section">
     <div class="container">
-      <h2 class="text-center mb-5 animate">O que você vai ver nessa Jornada</h2>
-      <div class="row">
-        <div class="col-md-6 animate">
+      <h2 class="text-center animate">O que você vai ver nessa Jornada</h2>
+      <div class="row mt-5">
+        <div class="col-md-6 animate delay-1">
           <ul class="list-unstyled fs-5">
-            <li class="mb-3">• Entender como profissionais comuns estão construindo negócios digitais de R$10.000 a R$100.000/mês com estrutura leve.</li>
-            <li class="mb-3">• Aprender a transformar suas ideias e habilidades em produtos digitais que vendem de forma consistente.</li>
+            <li class="mb-4"><i class="fas fa-check text-success me-3"></i>Entender como profissionais comuns estão construindo negócios digitais de <strong>R$10.000 a R$100.000/mês</strong> com estrutura leve.</li>
+            <li class="mb-4"><i class="fas fa-check text-success me-3"></i>Aprender a transformar suas ideias e habilidades em <strong>produtos digitais que vendem de forma consistente</strong>.</li>
           </ul>
         </div>
-        <div class="col-md-6 animate">
+        <div class="col-md-6 animate delay-2">
           <ul class="list-unstyled fs-5">
-            <li class="mb-3">• Dominar a lógica que sustenta toda operação digital escalável — tráfego, posicionamento, produto e autoridade.</li>
-            <li class="mb-3">• Criar um plano prático para viver do digital com autonomia, sem depender de lançamentos ou modinhas.</li>
+            <li class="mb-4"><i class="fas fa-check text-success me-3"></i>Dominar a lógica que sustenta toda operação digital escalável — <strong>tráfego, posicionamento, produto e autoridade</strong>.</li>
+            <li class="mb-4"><i class="fas fa-check text-success me-3"></i>Criar um plano prático para viver do digital com autonomia, <strong>sem depender de lançamentos ou modinhas</strong>.</li>
           </ul>
         </div>
       </div>
@@ -82,32 +186,48 @@
   </section>
 
   <!-- Mentor -->
-  <section class="section section-white">
+  <section class="section section-alt">
     <div class="container">
-      <h2 class="text-center mb-5 animate">Sobre o Mentor: Lucas Corasio</h2>
-      <div class="row align-items-center">
-        <div class="col-md-4 animate">
-          <img src="https://drive.google.com/uc?export=view&id=1C1xBVGH4ilsAhM-hAIO_1LEj5MKgTv3j" alt="Lucas Corasio" class="mentor-img">
+      <h2 class="text-center animate">Sobre o Mentor: Lucas Corasio</h2>
+      <div class="row align-items-center mt-5">
+        <div class="col-md-5 animate delay-1">
+          <img src="https://drive.google.com/uc?id=1C1xBVGH4ilsAhM-hAIO_1LEj5MKgTv3j" alt="Lucas Corasio" class="mentor-img">
         </div>
-        <div class="col-md-8 animate">
-          <p class="fs-5">Lucas Corasio é estrategista e mentor de empreendedores que desejam liberdade real — financeira, geográfica e emocional.</p>
-          <p class="fs-5">Com uma trajetória marcada por resultados expressivos no mercado digital, Lucas já liderou projetos que somam mais de R$ 25 milhões em faturamento, ajudando marcas e especialistas a escalarem suas operações com estratégia e propósito.</p>
-          <p class="fs-5">Começou sua jornada aos 17 anos, passou pelo mundo corporativo e fundou sua própria agência digital, onde se destacou por unir visão estratégica, design de negócios e execução de alta performance.</p>
+        <div class="col-md-7 animate delay-2">
+          <p class="fs-5 mb-3">Lucas Corasio é estrategista e mentor de empreendedores que desejam <strong>liberdade real — financeira, geográfica e emocional</strong>.</p>
+          <p class="fs-5 mb-3">Com uma trajetória marcada por resultados expressivos no mercado digital, Lucas já liderou projetos que somam <strong>mais de R$ 25 milhões em faturamento</strong>, ajudando marcas e especialistas a escalarem suas operações com estratégia e propósito.</p>
+          <p class="fs-5 mb-3">Começou sua jornada aos 17 anos, passou pelo mundo corporativo e fundou sua própria agência digital, onde se destacou por unir <strong>visão estratégica, design de negócios e execução de alta performance</strong>.</p>
           <p class="fs-5"><strong>Sua abordagem é direta: ele ensina o que vive — como criar negócios que funcionam de verdade, sem fórmulas mágicas ou dependência do "algoritmo".</strong></p>
         </div>
       </div>
     </div>
   </section>
 
-  <footer class="text-center py-4 bg-dark text-white">
-    <p>&copy; 2025 XPlus Agência de Lançamentos | contato@xplus.com.br</p>
+  <!-- Footer -->
+  <footer class="text-center">
+    <div class="container">
+      <p>&copy; 2025 XPlus Agência de Lançamentos | contato@xplus.com.br</p>
+    </div>
   </footer>
 
+  <!-- Form Submit -->
   <script>
-    document.getElementById('formCadastro').addEventListener('submit', e => {
+    document.getElementById('leadForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      alert('Cadastro realizado! Você receberá o link da Jornada por email.');
+      alert('Cadastro realizado com sucesso! Você receberá o link da Jornada por WhatsApp.');
+      this.reset();
     });
+
+    // Animações ao scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animate').forEach(el => observer.observe(el));
   </script>
 </body>
 </html>
